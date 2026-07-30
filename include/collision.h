@@ -11,6 +11,7 @@ typedef struct collision_t
 {
     Vector2 normal; // From B -> A
     float penetration;
+    Vector2 contactPoint;
 } Collision;
 
 void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision);

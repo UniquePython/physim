@@ -76,6 +76,7 @@ bool circlesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *col
     *collision = (Collision){
         .normal = normal,
         .penetration = radiusSum - distance,
+        .contactPoint = Vector2Subtract(la->pos, Vector2Scale(normal, sa->radius)),
     };
 
     return true;
@@ -104,16 +105,32 @@ bool boxesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *colli
 
     if (overlapX < overlapY)
     {
+        float x = (delta.x >= 0.0f) ? la->pos.x - halfA.x : la->pos.x + halfA.x;
+
+        float y = Clamp(
+            0.5f * (la->pos.y + lb->pos.y),
+            fmaxf(la->pos.y - halfA.y, lb->pos.y - halfB.y),
+            fminf(la->pos.y + halfA.y, lb->pos.y + halfB.y));
+
         *collision = (Collision){
             .normal = (delta.x >= 0.0f) ? (Vector2){1.0f, 0.0f} : (Vector2){-1.0f, 0.0f},
             .penetration = overlapX,
+            .contactPoint = (Vector2){x, y},
         };
     }
     else
     {
+        float y = (delta.y >= 0.0f) ? la->pos.y - halfA.y : la->pos.y + halfA.y;
+
+        float x = Clamp(
+            0.5f * (la->pos.x + lb->pos.x),
+            fmaxf(la->pos.x - halfA.x, lb->pos.x - halfB.x),
+            fminf(la->pos.x + halfA.x, lb->pos.x + halfB.x));
+
         *collision = (Collision){
             .normal = (delta.y >= 0.0f) ? (Vector2){0.0f, 1.0f} : (Vector2){0.0f, -1.0f},
             .penetration = overlapY,
+            .contactPoint = (Vector2){x, y},
         };
     }
 
@@ -151,6 +168,7 @@ bool circleBoxColliding(const PhysicsBody *circle, const PhysicsBody *box, Colli
         *collision = (Collision){
             .normal = Vector2Scale(delta, 1.0f / distance),
             .penetration = c->radius - distance,
+            .contactPoint = closest,
         };
 
         return true;
@@ -183,9 +201,21 @@ bool circleBoxColliding(const PhysicsBody *circle, const PhysicsBody *box, Colli
         normal = (Vector2){0.0f, 1.0f};
     }
 
+    Vector2 contact = lc->pos;
+
+    if (normal.x < 0.0f)
+        contact.x = left;
+    else if (normal.x > 0.0f)
+        contact.x = right;
+    else if (normal.y < 0.0f)
+        contact.y = top;
+    else
+        contact.y = bottom;
+
     *collision = (Collision){
         .normal = normal,
         .penetration = c->radius + minDist,
+        .contactPoint = contact,
     };
 
     return true;
