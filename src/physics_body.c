@@ -27,7 +27,7 @@ void drawPhysicsBody(const PhysicsBody *body)
     return;
 }
 
-static void resolveWindowCollisions(PhysicsBody *body)
+static void resolveWindowCollisions(const World *world, PhysicsBody *body)
 {
     const Shape *s = &body->shape;
     MotionProperties *m = &body->motion;
@@ -48,9 +48,9 @@ static void resolveWindowCollisions(PhysicsBody *body)
             m->vel.x *= -p->restitution;
         }
 
-        if (right > WIDTH)
+        if (right > world->width)
         {
-            m->pos.x = WIDTH - s->radius;
+            m->pos.x = world->width - s->radius;
             m->vel.x *= -p->restitution;
         }
 
@@ -60,9 +60,9 @@ static void resolveWindowCollisions(PhysicsBody *body)
             m->vel.y *= -p->restitution;
         }
 
-        if (bottom > HEIGHT)
+        if (bottom > world->height)
         {
-            m->pos.y = HEIGHT - s->radius;
+            m->pos.y = world->height - s->radius;
             m->vel.y *= -p->restitution;
         }
 
@@ -76,12 +76,12 @@ static void resolveWindowCollisions(PhysicsBody *body)
     return;
 }
 
-void updatePhysicsBody(PhysicsBody *body, float dt)
+void updatePhysicsBody(const World *world, PhysicsBody *body, float dt)
 {
     MotionProperties *m = &body->motion;
 
     m->vel = Vector2Add(m->vel, Vector2Scale(m->acc, dt));
     m->pos = Vector2Add(m->pos, Vector2Scale(m->vel, dt));
 
-    resolveWindowCollisions(body);
+    resolveWindowCollisions(world, body);
 }

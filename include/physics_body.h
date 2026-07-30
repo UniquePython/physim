@@ -3,6 +3,7 @@
 
 #include "shape.h"
 #include "properties.h"
+#include "world.h"
 
 typedef struct phybody_t
 {
@@ -15,6 +16,6 @@ PhysicsBody newPhysicsBody(Shape shape, MotionProperties motion, PhysicalPropert
 
 void drawPhysicsBody(const PhysicsBody *body);
 
-void updatePhysicsBody(PhysicsBody *body, float dt);
+void updatePhysicsBody(const World *world, PhysicsBody *body, float dt);
 
 #endif

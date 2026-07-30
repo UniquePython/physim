@@ -6,6 +6,7 @@
 #include "shape.h"
 #include "properties.h"
 #include "physics_body.h"
+#include "world.h"
 
 #define WIDTH 900
 #define HEIGHT 600
@@ -14,12 +15,14 @@
 #define INIT_POS WIDTH / 2, HEIGHT / 2
 #define INIT_VEL 200, -100
 #define GRAVITY 0, 500
-#define RESTITUTION 0.8
+#define RESTITUTION (float)0.8
 
 int main(void)
 {
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+
+    World world = newWorld(WIDTH, HEIGHT);
 
     Shape shape = newShapeCircle(10, RAYWHITE);
     MotionProperties motion = newMotionProperties(INIT_POS, INIT_VEL, GRAVITY);
@@ -34,7 +37,7 @@ int main(void)
 
         ClearBackground(BLACK);
 
-        updatePhysicsBody(&circle, dt);
+        updatePhysicsBody(&world, &circle, dt);
         drawPhysicsBody(&circle);
 
         EndDrawing();
