@@ -4,6 +4,9 @@
 
 void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
 {
+    struct linear_t *la = &a->motion.linear;
+    struct linear_t *lb = &b->motion.linear;
+
     const float invMassA = a->physical.invMass;
     const float invMassB = b->physical.invMass;
 
@@ -15,12 +18,15 @@ void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
     Vector2 correctionA = Vector2Scale(collision->normal, collision->penetration * (invMassA / totalInvMass));
     Vector2 correctionB = Vector2Scale(collision->normal, -collision->penetration * (invMassB / totalInvMass));
 
-    a->motion.pos = Vector2Add(a->motion.pos, correctionA);
-    b->motion.pos = Vector2Add(b->motion.pos, correctionB);
+    la->pos = Vector2Add(la->pos, correctionA);
+    lb->pos = Vector2Add(lb->pos, correctionB);
 }
 
 void resolveVelocity(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
 {
+    struct linear_t *la = &a->motion.linear;
+    struct linear_t *lb = &b->motion.linear;
+
     const float invMassA = a->physical.invMass;
     const float invMassB = b->physical.invMass;
 
@@ -28,7 +34,7 @@ void resolveVelocity(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
     if (totalInvMass == 0.0f)
         return;
 
-    Vector2 relativeVelocity = Vector2Subtract(a->motion.vel, b->motion.vel);
+    Vector2 relativeVelocity = Vector2Subtract(la->vel, lb->vel);
     float relativeVelocityAlongNormal = Vector2DotProduct(relativeVelocity, collision->normal);
 
     // Already separating.
@@ -40,19 +46,19 @@ void resolveVelocity(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
     float impulseScalar = -(1.0f + restitution) * relativeVelocityAlongNormal / totalInvMass;
     Vector2 impulse = Vector2Scale(collision->normal, impulseScalar);
 
-    a->motion.vel = Vector2Add(a->motion.vel, Vector2Scale(impulse, invMassA));
-    b->motion.vel = Vector2Subtract(b->motion.vel, Vector2Scale(impulse, invMassB));
+    la->vel = Vector2Add(la->vel, Vector2Scale(impulse, invMassA));
+    lb->vel = Vector2Subtract(lb->vel, Vector2Scale(impulse, invMassB));
 }
 
 bool circlesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *collision)
 {
-    const MotionProperties *ma = &a->motion;
-    const MotionProperties *mb = &b->motion;
+    const struct linear_t *la = &a->motion.linear;
+    const struct linear_t *lb = &b->motion.linear;
 
     const struct circle_t *sa = &a->shape.data.circle;
     const struct circle_t *sb = &b->shape.data.circle;
 
-    Vector2 delta = Vector2Subtract(ma->pos, mb->pos);
+    Vector2 delta = Vector2Subtract(la->pos, lb->pos);
     float distSq = Vector2LengthSqr(delta);
     float radiusSum = sa->radius + sb->radius;
 
@@ -77,8 +83,8 @@ bool circlesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *col
 
 bool boxesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *collision)
 {
-    const MotionProperties *ma = &a->motion;
-    const MotionProperties *mb = &b->motion;
+    const struct linear_t *la = &a->motion.linear;
+    const struct linear_t *lb = &b->motion.linear;
 
     const struct box_t *ba = &a->shape.data.box;
     const struct box_t *bb = &b->shape.data.box;
@@ -86,7 +92,7 @@ bool boxesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *colli
     Vector2 halfA = Vector2Scale(ba->size, 0.5f);
     Vector2 halfB = Vector2Scale(bb->size, 0.5f);
 
-    Vector2 delta = Vector2Subtract(ma->pos, mb->pos);
+    Vector2 delta = Vector2Subtract(la->pos, lb->pos);
 
     float overlapX = halfA.x + halfB.x - fabsf(delta.x);
     if (overlapX <= 0.0f)
@@ -116,22 +122,22 @@ bool boxesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *colli
 
 bool circleBoxColliding(const PhysicsBody *circle, const PhysicsBody *box, Collision *collision)
 {
-    const MotionProperties *mc = &circle->motion;
-    const MotionProperties *mb = &box->motion;
+    const struct linear_t *lc = &circle->motion.linear;
+    const struct linear_t *lb = &box->motion.linear;
 
     const struct circle_t *c = &circle->shape.data.circle;
     const struct box_t *b = &box->shape.data.box;
 
     Vector2 halfSize = Vector2Scale(b->size, 0.5f);
 
-    float left = mb->pos.x - halfSize.x;
-    float right = mb->pos.x + halfSize.x;
-    float top = mb->pos.y - halfSize.y;
-    float bottom = mb->pos.y + halfSize.y;
+    float left = lb->pos.x - halfSize.x;
+    float right = lb->pos.x + halfSize.x;
+    float top = lb->pos.y - halfSize.y;
+    float bottom = lb->pos.y + halfSize.y;
 
-    Vector2 closest = {Clamp(mc->pos.x, left, right), Clamp(mc->pos.y, top, bottom)};
+    Vector2 closest = {Clamp(lc->pos.x, left, right), Clamp(lc->pos.y, top, bottom)};
 
-    Vector2 delta = Vector2Subtract(mc->pos, closest);
+    Vector2 delta = Vector2Subtract(lc->pos, closest);
     float distSq = Vector2LengthSqr(delta);
 
     if (distSq > c->radius * c->radius)
@@ -151,10 +157,10 @@ bool circleBoxColliding(const PhysicsBody *circle, const PhysicsBody *box, Colli
     }
 
     // Circle center is inside the box.
-    float leftDist = mc->pos.x - left;
-    float rightDist = right - mc->pos.x;
-    float topDist = mc->pos.y - top;
-    float bottomDist = bottom - mc->pos.y;
+    float leftDist = lc->pos.x - left;
+    float rightDist = right - lc->pos.x;
+    float topDist = lc->pos.y - top;
+    float bottomDist = bottom - lc->pos.y;
 
     float minDist = leftDist;
     Vector2 normal = {-1.0f, 0.0f};

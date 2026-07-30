@@ -2,9 +2,9 @@
 
 #include <math.h>
 
-MotionProperties newMotionProperties(float px, float py, float vx, float vy, float ax, float ay)
+struct linear_t newLinearMotion(float px, float py, float vx, float vy, float ax, float ay)
 {
-    return (MotionProperties){
+    return (struct linear_t){
         .pos.x = px,
         .pos.y = py,
         .vel.x = vx,
@@ -14,12 +14,29 @@ MotionProperties newMotionProperties(float px, float py, float vx, float vy, flo
     };
 }
 
-MotionProperties newMotionPropertiesV(Vector2 pos, Vector2 vel, Vector2 acc)
+struct linear_t newLinearMotionV(Vector2 pos, Vector2 vel, Vector2 acc)
 {
-    return (MotionProperties){
+    return (struct linear_t){
         .pos = pos,
         .vel = vel,
         .acc = acc,
+    };
+}
+
+struct angular_t newAngularMotion(float angle, float vel, float acc)
+{
+    return (struct angular_t){
+        .angle = angle,
+        .vel = vel,
+        .acc = acc,
+    };
+}
+
+MotionProperties newMotionProperties(struct linear_t linear, struct angular_t angular)
+{
+    return (MotionProperties){
+        .linear = linear,
+        .angular = angular,
     };
 }
 

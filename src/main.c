@@ -16,8 +16,10 @@
 #define GRAVITY 0, 500
 
 #define NWALLS 4
-#define NCIRCLES 6
-#define NBODIES (NCIRCLES + NWALLS)
+#define NCIRCLES 3
+#define NBOXES 3
+#define NSHAPES (NBOXES + NCIRCLES)
+#define NBODIES (NSHAPES + NWALLS)
 
 #define WALL_THICKNESS 25
 
@@ -25,39 +27,59 @@ PhysicsBody newWall(Vector2 size, Vector2 pos)
 {
     return newPhysicsBody(
         newShapeBoxV(size, DARKGRAY),
-        newMotionPropertiesV(pos, Vector2Zero(), Vector2Zero()),
+        newMotionProperties(newLinearMotionV(pos, Vector2Zero(), Vector2Zero()), newAngularMotion(0.0f, 0.0f, 0.0f)),
         newPhysicalProperties(INFINITY, 1.0f));
 }
 
 void initWalls(const World *world, PhysicsBody bodies[NBODIES])
 {
-    bodies[NCIRCLES + 0] = newWall(
+    bodies[NSHAPES + 0] = newWall(
         (Vector2){world->width, WALL_THICKNESS},
         (Vector2){world->width * 0.5f, WALL_THICKNESS * 0.5f});
 
-    bodies[NCIRCLES + 1] = newWall(
+    bodies[NSHAPES + 1] = newWall(
         (Vector2){world->width, WALL_THICKNESS},
         (Vector2){world->width * 0.5f, world->height - WALL_THICKNESS * 0.5f});
 
-    bodies[NCIRCLES + 2] = newWall(
+    bodies[NSHAPES + 2] = newWall(
         (Vector2){WALL_THICKNESS, world->height},
         (Vector2){WALL_THICKNESS * 0.5f, world->height * 0.5f});
 
-    bodies[NCIRCLES + 3] = newWall(
+    bodies[NSHAPES + 3] = newWall(
         (Vector2){WALL_THICKNESS, world->height},
         (Vector2){world->width - WALL_THICKNESS * 0.5f, world->height * 0.5f});
 }
 
 void initBalls(PhysicsBody bodies[NBODIES])
 {
-    for (size_t i = 0; i < NCIRCLES; i++)
+    for (size_t i = NBOXES; i < NSHAPES; i++)
     {
         Shape shape = newShapeCircle(10, RAYWHITE);
 
         MotionProperties motion = newMotionProperties(
-            (float)(i + WALL_THICKNESS), (float)(i + WALL_THICKNESS),
-            (float)(20 * i), (float)(20 * i),
-            0.0f, 0.0f);
+            newLinearMotion(
+                WIDTH / 2, HEIGHT / 2,
+                (float)(10 * i), (float)(10 * i),
+                0.0f, 0.0f),
+            newAngularMotion(0.0f, 0.0f, 0.0f));
+        PhysicalProperties physical = newPhysicalProperties((float)(10 * (i + 1)), 0.8f);
+
+        bodies[i] = newPhysicsBody(shape, motion, physical);
+    }
+}
+
+void initBoxes(PhysicsBody bodies[NBODIES])
+{
+    for (size_t i = 0; i < NBOXES; i++)
+    {
+        Shape shape = newShapeBox(20, 20, RAYWHITE);
+
+        MotionProperties motion = newMotionProperties(
+            newLinearMotion(
+                WIDTH / 2, HEIGHT / 2,
+                (float)(20 * i), (float)(20 * i),
+                0.0f, 0.0f),
+            newAngularMotion((float)(5 * i), (float)(5 * i), 0.0f));
         PhysicalProperties physical = newPhysicalProperties((float)(10 * (i + 1)), 0.8f);
 
         bodies[i] = newPhysicsBody(shape, motion, physical);
@@ -108,6 +130,7 @@ int main(void)
 
     initWalls(&world, bodies);
     initBalls(bodies);
+    initBoxes(bodies);
 
     while (!WindowShouldClose())
     {

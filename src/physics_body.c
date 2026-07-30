@@ -12,39 +12,55 @@ PhysicsBody newPhysicsBody(Shape shape, MotionProperties motion, PhysicalPropert
 void drawPhysicsBody(const PhysicsBody *body)
 {
     const Shape *s = &body->shape;
-    const MotionProperties *m = &body->motion;
+    const struct linear_t *l = &body->motion.linear;
+    const struct angular_t *a = &body->motion.angular;
 
     switch (s->sk)
     {
     case SK_CIRCLE:
     {
         const struct circle_t *c = &s->data.circle;
-        DrawCircleV(m->pos, c->radius, s->color);
+        DrawCircleV(l->pos, c->radius, s->color);
         break;
     }
 
     case SK_BOX:
     {
         const struct box_t *b = &s->data.box;
-        Vector2 half = Vector2Scale(b->size, 0.5f);
-        DrawRectangleV(Vector2Subtract(body->motion.pos, half), b->size, body->shape.color);
+
+        DrawRectanglePro(
+            (Rectangle){
+                l->pos.x,
+                l->pos.y,
+                b->width,
+                b->height,
+            },
+            Vector2Scale(b->size, 0.5f),
+            a->angle * RAD2DEG,
+            s->color);
         break;
     }
 
     default:
         break;
     }
-
-    return;
 }
 
 void updatePhysicsBody(const World *world, PhysicsBody *body, float dt)
 {
-    MotionProperties *m = &body->motion;
+    struct linear_t *l = &body->motion.linear;
+    struct angular_t *a = &body->motion.angular;
 
-    m->acc = (Vector2){0, 0};
-    m->acc = Vector2Add(m->acc, world->gravity);
+    // Linear
+    l->acc = (Vector2){0, 0};
+    l->acc = Vector2Add(l->acc, world->gravity);
 
-    m->vel = Vector2Add(m->vel, Vector2Scale(m->acc, dt));
-    m->pos = Vector2Add(m->pos, Vector2Scale(m->vel, dt));
+    l->vel = Vector2Add(l->vel, Vector2Scale(l->acc, dt));
+    l->pos = Vector2Add(l->pos, Vector2Scale(l->vel, dt));
+
+    // Angular
+    a->acc = 0.0f;
+
+    a->vel += a->acc * dt;
+    a->angle += a->vel * dt;
 }
