@@ -105,7 +105,6 @@ void handleCollisions(PhysicsBody bodies[NBODIES])
             {
                 resolveOverlap(a, b, &collision);
                 resolveVelocity(a, b, &collision);
-                DrawCircleV(collision.contactPoint, 10, RED);
             }
         }
     }
