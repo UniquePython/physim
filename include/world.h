@@ -1,7 +1,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
-#include <raylib.h>
+#include "raylib_all.h"
 
 typedef struct world_t
 {

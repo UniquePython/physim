@@ -6,6 +6,7 @@
 #include "properties.h"
 #include "physics_body.h"
 #include "world.h"
+#include "collision.h"
 
 #define WIDTH 900
 #define HEIGHT 600
@@ -44,11 +45,29 @@ int main(void)
 
         ClearBackground(BLACK);
 
+        // Update
         for (size_t i = 0; i < NBODIES; i++)
         {
             updatePhysicsBody(&world, &bodies[i], dt);
-            drawPhysicsBody(&bodies[i]);
+            bodies[i].shape.color = RAYWHITE;
         }
+
+        // Detect collisions
+        for (size_t i = 0; i < NBODIES; i++)
+        {
+            for (size_t j = i + 1; j < NBODIES; j++)
+            {
+                if (bodiesColliding(&bodies[i], &bodies[j]))
+                {
+                    bodies[i].shape.color = RED;
+                    bodies[j].shape.color = GREEN;
+                }
+            }
+        }
+
+        // Draw
+        for (size_t i = 0; i < NBODIES; i++)
+            drawPhysicsBody(&bodies[i]);
 
         EndDrawing();
     }
