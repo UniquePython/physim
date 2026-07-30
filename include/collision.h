@@ -14,6 +14,7 @@ typedef struct collision_t
 } Collision;
 
 void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision);
+void resolveVelocity(PhysicsBody *a, PhysicsBody *b, const Collision *collision);
 
 bool bodiesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *collision);
 

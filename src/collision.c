@@ -19,6 +19,31 @@ void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
     b->motion.pos = Vector2Add(b->motion.pos, correctionB);
 }
 
+void resolveVelocity(PhysicsBody *a, PhysicsBody *b, const Collision *collision)
+{
+    const float invMassA = a->physical.invMass;
+    const float invMassB = b->physical.invMass;
+
+    const float totalInvMass = invMassA + invMassB;
+    if (totalInvMass == 0.0f)
+        return;
+
+    Vector2 relativeVelocity = Vector2Subtract(a->motion.vel, b->motion.vel);
+    float relativeVelocityAlongNormal = Vector2DotProduct(relativeVelocity, collision->normal);
+
+    // Already separating.
+    if (relativeVelocityAlongNormal > 0.0f)
+        return;
+
+    float restitution = fminf(a->physical.restitution, b->physical.restitution);
+
+    float impulseScalar = -(1.0f + restitution) * relativeVelocityAlongNormal / totalInvMass;
+    Vector2 impulse = Vector2Scale(collision->normal, impulseScalar);
+
+    a->motion.vel = Vector2Add(a->motion.vel, Vector2Scale(impulse, invMassA));
+    b->motion.vel = Vector2Subtract(b->motion.vel, Vector2Scale(impulse, invMassB));
+}
+
 bool circlesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *collision)
 {
     const MotionProperties *ma = &a->motion;

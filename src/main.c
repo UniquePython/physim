@@ -59,8 +59,14 @@ int main(void)
             {
                 Collision collision;
 
-                if (bodiesColliding(&bodies[i], &bodies[j], &collision))
-                    resolveOverlap(&bodies[i], &bodies[j], &collision);
+                PhysicsBody *a = &bodies[i];
+                PhysicsBody *b = &bodies[j];
+
+                if (bodiesColliding(a, b, &collision))
+                {
+                    resolveOverlap(a, b, &collision);
+                    resolveVelocity(a, b, &collision);
+                }
             }
         }
 
