@@ -43,4 +43,7 @@ Shape newShapeBase(ShapeKind sk, Color color);
 
 Shape newShapeCircle(float radius, Color color);
 
+Shape newShapeBox(float width, float height, Color color);
+Shape newShapeBoxV(Vector2 size, Color color);
+
 #endif

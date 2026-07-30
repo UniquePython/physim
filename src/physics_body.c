@@ -26,58 +26,8 @@ void drawPhysicsBody(const PhysicsBody *body)
     case SK_BOX:
     {
         const struct box_t *b = &s->data.box;
-        DrawRectangleV(m->pos, b->size, s->color);
-        break;
-    }
-
-    default:
-        break;
-    }
-
-    return;
-}
-
-static void resolveWindowCollisions(const World *world, PhysicsBody *body)
-{
-    const Shape *s = &body->shape;
-    MotionProperties *m = &body->motion;
-    const PhysicalProperties *p = &body->physical;
-
-    switch (s->sk)
-    {
-    case SK_CIRCLE:
-    {
-        const struct circle_t *c = &s->data.circle;
-
-        const float left = m->pos.x - c->radius;
-        const float right = m->pos.x + c->radius;
-        const float top = m->pos.y - c->radius;
-        const float bottom = m->pos.y + c->radius;
-
-        if (left < 0)
-        {
-            m->pos.x = c->radius;
-            m->vel.x *= -p->restitution;
-        }
-
-        if (right > world->width)
-        {
-            m->pos.x = world->width - c->radius;
-            m->vel.x *= -p->restitution;
-        }
-
-        if (top < 0)
-        {
-            m->pos.y = c->radius;
-            m->vel.y *= -p->restitution;
-        }
-
-        if (bottom > world->height)
-        {
-            m->pos.y = world->height - c->radius;
-            m->vel.y *= -p->restitution;
-        }
-
+        Vector2 half = Vector2Scale(b->size, 0.5f);
+        DrawRectangleV(Vector2Subtract(body->motion.pos, half), b->size, body->shape.color);
         break;
     }
 
@@ -97,6 +47,4 @@ void updatePhysicsBody(const World *world, PhysicsBody *body, float dt)
 
     m->vel = Vector2Add(m->vel, Vector2Scale(m->acc, dt));
     m->pos = Vector2Add(m->pos, Vector2Scale(m->vel, dt));
-
-    resolveWindowCollisions(world, body);
 }
