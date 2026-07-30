@@ -80,7 +80,9 @@ void updatePhysicsBody(const World *world, PhysicsBody *body, float dt)
 {
     MotionProperties *m = &body->motion;
 
-    m->acc = (Vector2){0, world->gravity};
+    m->acc = (Vector2){0, 0};
+    m->acc = Vector2Add(m->acc, world->gravity);
+
     m->vel = Vector2Add(m->vel, Vector2Scale(m->acc, dt));
     m->pos = Vector2Add(m->pos, Vector2Scale(m->vel, dt));
 

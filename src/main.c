@@ -13,7 +13,7 @@
 #define HEIGHT 600
 #define TITLE "Physim - Simple Physics Simulator"
 
-#define GRAVITY 500
+#define GRAVITY 0, 500
 #define NBODIES 5
 
 int main(void)
