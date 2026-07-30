@@ -49,8 +49,8 @@ bool circlesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *col
     const MotionProperties *ma = &a->motion;
     const MotionProperties *mb = &b->motion;
 
-    const Shape *sa = &a->shape;
-    const Shape *sb = &b->shape;
+    const struct circle_t *sa = &a->shape.data.circle;
+    const struct circle_t *sb = &b->shape.data.circle;
 
     Vector2 delta = Vector2Subtract(ma->pos, mb->pos);
     float distSq = Vector2LengthSqr(delta);

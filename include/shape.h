@@ -6,14 +6,34 @@
 typedef enum sk_t
 {
     SK_CIRCLE,
+    SK_BOX,
 } ShapeKind;
 
 typedef struct shape_t
 {
     ShapeKind sk;
 
-    // For circle
-    float radius;
+    union data_t
+    {
+        struct circle_t
+        {
+            float radius;
+        } circle;
+
+        struct box_t
+        {
+            union
+            {
+                struct
+                {
+                    float width;
+                    float height;
+                };
+                Vector2 dimensions;
+            };
+        } box;
+
+    } data;
 
     // For all shapes
     Color color;

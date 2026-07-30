@@ -17,8 +17,11 @@ void drawPhysicsBody(const PhysicsBody *body)
     switch (s->sk)
     {
     case SK_CIRCLE:
-        DrawCircleV(m->pos, s->radius, s->color);
+    {
+        const struct circle_t *c = &s->data.circle;
+        DrawCircleV(m->pos, c->radius, s->color);
         break;
+    }
 
     default:
         break;
@@ -37,32 +40,34 @@ static void resolveWindowCollisions(const World *world, PhysicsBody *body)
     {
     case SK_CIRCLE:
     {
-        const float left = m->pos.x - s->radius;
-        const float right = m->pos.x + s->radius;
-        const float top = m->pos.y - s->radius;
-        const float bottom = m->pos.y + s->radius;
+        const struct circle_t *c = &s->data.circle;
+
+        const float left = m->pos.x - c->radius;
+        const float right = m->pos.x + c->radius;
+        const float top = m->pos.y - c->radius;
+        const float bottom = m->pos.y + c->radius;
 
         if (left < 0)
         {
-            m->pos.x = s->radius;
+            m->pos.x = c->radius;
             m->vel.x *= -p->restitution;
         }
 
         if (right > world->width)
         {
-            m->pos.x = world->width - s->radius;
+            m->pos.x = world->width - c->radius;
             m->vel.x *= -p->restitution;
         }
 
         if (top < 0)
         {
-            m->pos.y = s->radius;
+            m->pos.y = c->radius;
             m->vel.y *= -p->restitution;
         }
 
         if (bottom > world->height)
         {
-            m->pos.y = world->height - s->radius;
+            m->pos.y = world->height - c->radius;
             m->vel.y *= -p->restitution;
         }
 
