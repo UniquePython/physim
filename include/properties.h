@@ -2,6 +2,7 @@
 #define PROPERTIES_H_
 
 #include "raylib_all.h"
+#include "shape.h"
 
 #include <stdbool.h>
 
@@ -27,7 +28,9 @@ typedef struct phyprops_t
     float mass;
     float invMass;
 
-    // A body is static when `mass == INFINITY && invMass == 0`
+    float inertia;
+    float invInertia;
+
     bool isStatic;
 
     float restitution;
@@ -40,6 +43,6 @@ struct angular_t newAngularMotion(float angle, float vel, float acc);
 
 MotionProperties newMotionProperties(struct linear_t linear, struct angular_t angular);
 
-PhysicalProperties newPhysicalProperties(float mass, float restitution);
+PhysicalProperties newPhysicalProperties(const Shape *shape, float mass, float restitution);
 
 #endif

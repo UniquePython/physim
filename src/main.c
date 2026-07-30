@@ -25,10 +25,11 @@
 
 PhysicsBody newWall(Vector2 size, Vector2 pos)
 {
-    return newPhysicsBody(
-        newShapeBoxV(size, DARKGRAY),
-        newMotionProperties(newLinearMotionV(pos, Vector2Zero(), Vector2Zero()), newAngularMotion(0.0f, 0.0f, 0.0f)),
-        newPhysicalProperties(INFINITY, 1.0f));
+    Shape shape = newShapeBoxV(size, DARKGRAY);
+    struct linear_t linear = newLinearMotionV(pos, Vector2Zero(), Vector2Zero());
+    struct angular_t angular = newAngularMotion(0.0f, 0.0f, 0.0f);
+    PhysicalProperties physical = newPhysicalProperties(&shape, INFINITY, 1.0f);
+    return newPhysicsBody(shape, newMotionProperties(linear, angular), physical);
 }
 
 void initWalls(const World *world, PhysicsBody bodies[NBODIES])
@@ -56,13 +57,11 @@ void initBalls(PhysicsBody bodies[NBODIES])
     {
         Shape shape = newShapeCircle(10, RAYWHITE);
 
-        MotionProperties motion = newMotionProperties(
-            newLinearMotion(
-                WIDTH / 2, HEIGHT / 2,
-                (float)(10 * i), (float)(10 * i),
-                0.0f, 0.0f),
-            newAngularMotion(0.0f, 0.0f, 0.0f));
-        PhysicalProperties physical = newPhysicalProperties((float)(10 * (i + 1)), 0.8f);
+        struct linear_t linear = newLinearMotion(WIDTH / 2, HEIGHT / 2, (float)(10 * i), (float)(10 * i), 0.0f, 0.0f);
+        struct angular_t angular = newAngularMotion(0.0f, 0.0f, 0.0f);
+
+        MotionProperties motion = newMotionProperties(linear, angular);
+        PhysicalProperties physical = newPhysicalProperties(&shape, (float)(10 * (i + 1)), 0.8f);
 
         bodies[i] = newPhysicsBody(shape, motion, physical);
     }
@@ -74,13 +73,11 @@ void initBoxes(PhysicsBody bodies[NBODIES])
     {
         Shape shape = newShapeBox(20, 20, RAYWHITE);
 
-        MotionProperties motion = newMotionProperties(
-            newLinearMotion(
-                WIDTH / 2, HEIGHT / 2,
-                (float)(20 * i), (float)(20 * i),
-                0.0f, 0.0f),
-            newAngularMotion((float)(5 * i), (float)(5 * i), 0.0f));
-        PhysicalProperties physical = newPhysicalProperties((float)(10 * (i + 1)), 0.8f);
+        struct linear_t linear = newLinearMotion(WIDTH / 2, HEIGHT / 2, (float)(20 * i), (float)(20 * i), 0.0f, 0.0f);
+        struct angular_t angular = newAngularMotion((float)(5 * i), (float)(5 * i), 0.0f);
+
+        MotionProperties motion = newMotionProperties(linear, angular);
+        PhysicalProperties physical = newPhysicalProperties(&shape, (float)(10 * (i + 1)), 0.8f);
 
         bodies[i] = newPhysicsBody(shape, motion, physical);
     }
