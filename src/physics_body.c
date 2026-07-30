@@ -23,6 +23,13 @@ void drawPhysicsBody(const PhysicsBody *body)
         break;
     }
 
+    case SK_BOX:
+    {
+        const struct box_t *b = &s->data.box;
+        DrawRectangleV(m->pos, b->size, s->color);
+        break;
+    }
+
     default:
         break;
     }

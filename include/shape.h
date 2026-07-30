@@ -29,7 +29,7 @@ typedef struct shape_t
                     float width;
                     float height;
                 };
-                Vector2 dimensions;
+                Vector2 size;
             };
         } box;
 

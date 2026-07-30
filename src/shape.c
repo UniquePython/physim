@@ -23,9 +23,9 @@ Shape newShapeBox(float width, float height, Color color)
     return shape;
 }
 
-Shape newShapeBoxV(Vector2 dimensions, Color color)
+Shape newShapeBoxV(Vector2 size, Color color)
 {
     Shape shape = newShapeBase(SK_BOX, color);
-    shape.data.box.dimensions = dimensions;
+    shape.data.box.size = size;
     return shape;
 }
