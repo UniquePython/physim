@@ -1,7 +1,7 @@
 #ifndef SHAPE_H_
 #define SHAPE_H_
 
-#include <raylib.h>
+#include "raylib_all.h"
 
 typedef enum sk_t
 {

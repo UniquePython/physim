@@ -1,7 +1,7 @@
 #ifndef PROPERTIES_H_
 #define PROPERTIES_H_
 
-#include <raymath.h>
+#include "raylib_all.h"
 
 typedef struct motionprops_t
 {

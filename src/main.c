@@ -1,9 +1,7 @@
-#include <raylib.h>
-#include <raymath.h>
-
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "raylib_all.h"
 #include "shape.h"
 #include "properties.h"
 #include "physics_body.h"

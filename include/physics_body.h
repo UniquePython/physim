@@ -1,6 +1,7 @@
 #ifndef PHYSICS_BODY_H_
 #define PHYSICS_BODY_H_
 
+#include "raylib_all.h"
 #include "shape.h"
 #include "properties.h"
 #include "world.h"
