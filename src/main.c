@@ -32,7 +32,7 @@ int main(void)
             (float)i, (float)i,
             (float)(20 * i), (float)(20 * i),
             0.0f, 0.0f);
-        PhysicalProperties physical = newPhysicalProperties(0.8f);
+        PhysicalProperties physical = newPhysicalProperties((float)(10 * (i + 1)), 0.8f);
 
         bodies[i] = newPhysicsBody(shape, motion, physical);
     }
