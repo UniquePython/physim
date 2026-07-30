@@ -7,6 +7,14 @@
 
 #include <stdbool.h>
 
-bool bodiesColliding(const PhysicsBody *a, const PhysicsBody *b);
+typedef struct collision_t
+{
+    Vector2 normal; // From B -> A
+    float penetration;
+} Collision;
+
+void resolveOverlap(PhysicsBody *a, PhysicsBody *b, const Collision *collision);
+
+bool bodiesColliding(const PhysicsBody *a, const PhysicsBody *b, Collision *collision);
 
 #endif

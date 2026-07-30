@@ -57,11 +57,10 @@ int main(void)
         {
             for (size_t j = i + 1; j < NBODIES; j++)
             {
-                if (bodiesColliding(&bodies[i], &bodies[j]))
-                {
-                    bodies[i].shape.color = RED;
-                    bodies[j].shape.color = GREEN;
-                }
+                Collision collision;
+
+                if (bodiesColliding(&bodies[i], &bodies[j], &collision))
+                    resolveOverlap(&bodies[i], &bodies[j], &collision);
             }
         }
 

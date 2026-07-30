@@ -13,7 +13,7 @@ DEP := $(OBJ:.o=.d)
 
 CPPFLAGS := -I$(INC_DIR) $(shell pkg-config --cflags raylib)
 CFLAGS := -std=c11 -g -O0 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -MMD -MP
-LDLIBS := $(shell pkg-config --libs raylib)
+LDLIBS := $(shell pkg-config --libs raylib) -lm
 
 .PHONY: all run clean rebuild
 
