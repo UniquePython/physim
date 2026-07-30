@@ -5,8 +5,10 @@ typedef struct world_t
 {
     float width;
     float height;
+
+    float gravity;
 } World;
 
-World newWorld(float width, float height);
+World newWorld(float width, float height, float gravity);
 
 #endif

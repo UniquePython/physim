@@ -13,6 +13,7 @@
 #define HEIGHT 600
 #define TITLE "Physim - Simple Physics Simulator"
 
+#define GRAVITY 500
 #define NBODIES 5
 
 int main(void)
@@ -20,7 +21,7 @@ int main(void)
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
 
-    World world = newWorld(WIDTH, HEIGHT);
+    World world = newWorld(WIDTH, HEIGHT, GRAVITY);
 
     PhysicsBody bodies[NBODIES] = {0};
 
@@ -31,7 +32,7 @@ int main(void)
         MotionProperties motion = newMotionProperties(
             (float)i, (float)i,
             (float)(20 * i), (float)(20 * i),
-            (float)(40 * i), (float)(40 * i));
+            0.0f, 0.0f);
         PhysicalProperties physical = newPhysicalProperties(0.8f);
 
         bodies[i] = newPhysicsBody(shape, motion, physical);
