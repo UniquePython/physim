@@ -2,6 +2,7 @@
 #include <raymath.h>
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "shape.h"
 #include "properties.h"
@@ -12,10 +13,7 @@
 #define HEIGHT 600
 #define TITLE "Physim - Simple Physics Simulator"
 
-#define INIT_POS WIDTH / 2, HEIGHT / 2
-#define INIT_VEL 200, -100
-#define GRAVITY 0, 500
-#define RESTITUTION (float)0.8
+#define NBODIES 5
 
 int main(void)
 {
@@ -24,10 +22,20 @@ int main(void)
 
     World world = newWorld(WIDTH, HEIGHT);
 
-    Shape shape = newShapeCircle(10, RAYWHITE);
-    MotionProperties motion = newMotionProperties(INIT_POS, INIT_VEL, GRAVITY);
-    PhysicalProperties physical = newPhysicalProperties(RESTITUTION);
-    PhysicsBody circle = newPhysicsBody(shape, motion, physical);
+    PhysicsBody bodies[NBODIES] = {0};
+
+    for (size_t i = 0; i < NBODIES; i++)
+    {
+        Shape shape = newShapeCircle(10, RAYWHITE);
+
+        MotionProperties motion = newMotionProperties(
+            (float)i, (float)i,
+            (float)(20 * i), (float)(20 * i),
+            (float)(40 * i), (float)(40 * i));
+        PhysicalProperties physical = newPhysicalProperties(0.8f);
+
+        bodies[i] = newPhysicsBody(shape, motion, physical);
+    }
 
     while (!WindowShouldClose())
     {
@@ -37,8 +45,11 @@ int main(void)
 
         ClearBackground(BLACK);
 
-        updatePhysicsBody(&world, &circle, dt);
-        drawPhysicsBody(&circle);
+        for (size_t i = 0; i < NBODIES; i++)
+        {
+            updatePhysicsBody(&world, &bodies[i], dt);
+            drawPhysicsBody(&bodies[i]);
+        }
 
         EndDrawing();
     }
