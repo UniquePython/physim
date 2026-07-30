@@ -1,0 +1,87 @@
+#include "physics_body.h"
+
+PhysicsBody newPhysicsBody(Shape shape, MotionProperties motion, PhysicalProperties physical)
+{
+    return (PhysicsBody){
+        .shape = shape,
+        .motion = motion,
+        .physical = physical,
+    };
+}
+
+void drawPhysicsBody(const PhysicsBody *body)
+{
+    const Shape *s = &body->shape;
+    const MotionProperties *m = &body->motion;
+
+    switch (s->sk)
+    {
+    case SK_CIRCLE:
+        DrawCircleV(m->pos, s->radius, s->color);
+        break;
+
+    default:
+        break;
+    }
+
+    return;
+}
+
+static void resolveWindowCollisions(PhysicsBody *body)
+{
+    const Shape *s = &body->shape;
+    MotionProperties *m = &body->motion;
+    const PhysicalProperties *p = &body->physical;
+
+    switch (s->sk)
+    {
+    case SK_CIRCLE:
+    {
+        const float left = m->pos.x - s->radius;
+        const float right = m->pos.x + s->radius;
+        const float top = m->pos.y - s->radius;
+        const float bottom = m->pos.y + s->radius;
+
+        if (left < 0)
+        {
+            m->pos.x = s->radius;
+            m->vel.x *= -p->restitution;
+        }
+
+        if (right > WIDTH)
+        {
+            m->pos.x = WIDTH - s->radius;
+            m->vel.x *= -p->restitution;
+        }
+
+        if (top < 0)
+        {
+            m->pos.y = s->radius;
+            m->vel.y *= -p->restitution;
+        }
+
+        if (bottom > HEIGHT)
+        {
+            m->pos.y = HEIGHT - s->radius;
+            m->vel.y *= -p->restitution;
+        }
+
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return;
+}
+
+void updatePhysicsBody(PhysicsBody *body, float dt)
+{
+    MotionProperties *m = &body->motion;
+
+    m->vel = Vector2Add(m->vel, Vector2Scale(m->acc, dt));
+    m->pos = Vector2Add(m->pos, Vector2Scale(m->vel, dt));
+
+    resolveWindowCollisions(body);
+}
